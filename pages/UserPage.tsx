@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { Raffle, Ticket, Participant, TicketStatus } from '../types';
 import RaffleGrid from '../components/RaffleGrid';
 import RaffleDetailsCard from '../components/RaffleDetailsCard';
@@ -59,7 +60,7 @@ const UserPage: React.FC<UserPageProps> = ({ activeRaffle, onReserveTicket }) =>
         setLastReservedTicket(null); 
       } catch (error) {
         console.error("Error generating PDF:", error);
-        alert("Hubo un error al generar el PDF del boleto.");
+        toast.error("Hubo un error al generar el PDF del boleto.");
       }
     }
   };
@@ -69,7 +70,7 @@ const UserPage: React.FC<UserPageProps> = ({ activeRaffle, onReserveTicket }) =>
       await generateFullPageScreenshot(`vista_rifa_${activeRaffle?.title.replace(/\s+/g, '_') || 'general'}_`);
     } catch (error) {
       console.error("Error generating full page screenshot:", error);
-      alert("Hubo un error al generar la captura de pantalla.");
+      toast.error("Hubo un error al generar la captura de pantalla.");
     }
   };
 

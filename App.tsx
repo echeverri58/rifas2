@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Raffle, Ticket, Participant, TicketStatus, RaffleCreationData } from './types';
 import { TOTAL_TICKETS, DEFAULT_RAFFLE_DETAILS, APP_TITLE, DEFAULT_GRID_SIZE_PRESET } from './constants';
 import UserPage from './pages/UserPage';
@@ -71,12 +73,12 @@ const App: React.FC = () => {
       gridSizePreset: raffleData.gridSizePreset || DEFAULT_GRID_SIZE_PRESET,
     };
     setActiveRaffle(newRaffle);
-     alert(`Rifa "${newRaffle.title}" creada exitosamente!`);
+    toast.success(`Rifa "${newRaffle.title}" creada exitosamente!`);
   };
   
   const handleUpdateRaffle = (raffleData: RaffleCreationData) => {
     if (!activeRaffle) {
-        alert("No hay rifa activa para actualizar.");
+        toast.error("No hay rifa activa para actualizar.");
         return;
     }
     const updatedRaffle: Raffle = {
@@ -90,7 +92,7 @@ const App: React.FC = () => {
         gridSizePreset: raffleData.gridSizePreset || activeRaffle.gridSizePreset || DEFAULT_GRID_SIZE_PRESET,
     };
     setActiveRaffle(updatedRaffle);
-    alert(`Rifa "${updatedRaffle.title}" actualizada exitosamente!`);
+    toast.success(`Rifa "${updatedRaffle.title}" actualizada exitosamente!`);
   };
 
   const handleReserveTicket = (ticketNumber: string, participant: Participant) => {
@@ -119,6 +121,14 @@ const App: React.FC = () => {
         ),
       };
     });
+  };
+
+  const handleClearRaffle = () => {
+    if (window.confirm("¿Estás seguro de que deseas limpiar la rifa actual? Esta acción no se puede deshacer.")) {
+      setActiveRaffle(undefined);
+      localStorage.removeItem('activeRaffle');
+      toast.success("Rifa limpiada exitosamente.");
+    }
   };
 
   const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string }> = ({ to, icon, label }) => (
@@ -165,7 +175,8 @@ const App: React.FC = () => {
                   activeRaffle={activeRaffle} 
                   onCreateRaffle={handleCreateRaffle} 
                   onUpdateRaffle={handleUpdateRaffle}
-                  onMarkTicketAsPaid={handleMarkTicketAsPaid} 
+                  onMarkTicketAsPaid={handleMarkTicketAsPaid}
+                  onClearRaffle={handleClearRaffle}
                 />
               } 
             />
@@ -178,6 +189,17 @@ const App: React.FC = () => {
         </footer>
       </div>
       <div id="pdf-ticket-render-area" style={{ position: 'absolute', left: '-9999px', top: '-9999px', zIndex: -1, width:'1px', height:'1px', overflow:'hidden' }}></div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </HashRouter>
   );
 };
