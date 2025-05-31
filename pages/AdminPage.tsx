@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { toast } from 'react-toastify';
 import { Raffle, RaffleCreationData, TicketStatus, Ticket } from '../types';
 import AdminRaffleForm from '../components/AdminRaffleForm';
 import RaffleGrid from '../components/RaffleGrid';
@@ -13,23 +14,24 @@ interface AdminPageProps {
   onCreateRaffle: (raffleData: RaffleCreationData) => void;
   onUpdateRaffle: (raffleData: RaffleCreationData) => void;
   onMarkTicketAsPaid: (ticketNumber: string) => void;
+  onClearRaffle: () => void;
 }
 
 const GRID_SCREENSHOT_ID = 'admin-raffle-grid-screenshot';
 
-const AdminPage: React.FC<AdminPageProps> = ({ activeRaffle, onCreateRaffle, onUpdateRaffle, onMarkTicketAsPaid }) => {
+const AdminPage: React.FC<AdminPageProps> = ({ activeRaffle, onCreateRaffle, onUpdateRaffle, onMarkTicketAsPaid, onClearRaffle }) => {
   
   const handleScreenshot = async () => {
     if (activeRaffle) {
       await generateGridScreenshot(GRID_SCREENSHOT_ID, activeRaffle.title);
     } else {
-      alert("No hay rifa activa para generar la imagen.");
+      toast.info("No hay rifa activa para generar la imagen.");
     }
   };
 
   const handleMarkAsPaidAndDownload = async (ticket: Ticket) => {
     if (!activeRaffle || !ticket.participant) {
-      alert("Error: No se puede procesar el pago sin datos de la rifa o del participante.");
+      toast.error("Error: No se puede procesar el pago sin datos de la rifa o del participante.");
       return;
     }
     onMarkTicketAsPaid(ticket.number);
@@ -41,7 +43,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ activeRaffle, onCreateRaffle, onU
       await generateTicketPdf(activeRaffle, ticket, ticket.participant);
     } catch (error) {
       console.error("Error generating PDF for paid ticket:", error);
-      alert("Hubo un error al generar el PDF del boleto pagado.");
+      toast.error("Hubo un error al generar el PDF del boleto pagado.");
     }
   };
 
@@ -73,7 +75,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ activeRaffle, onCreateRaffle, onU
           {activeRaffle ? (
             <>
              <RaffleDetailsCard raffle={activeRaffle} />
-             <div className="p-6 bg-white rounded-xl shadow-xl">
+             <button
+                onClick={onClearRaffle}
+                disabled={!activeRaffle}
+                className="mt-4 w-full inline-flex items-center justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 transition duration-150"
+              >
+                Limpiar Rifa Actual
+              </button>
+             <div className="mt-4 p-6 bg-white rounded-xl shadow-xl">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Estado General de Boletos</h3>
                  <p className="text-sm text-gray-600">Disponibles: <span className="font-bold text-green-600">{availableCount}</span></p>
                  <p className="text-sm text-gray-600">Reservados: <span className="font-bold text-red-600">{reservedCount}</span></p>
