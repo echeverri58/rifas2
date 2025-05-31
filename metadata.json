@@ -1,0 +1,6 @@
+{
+  "name": "Aplicación de Rifas",
+  "description": "Una aplicación web para crear y gestionar rifas de artículos, permitiendo a los usuarios ver números disponibles, reservarlos y descargar un boleto en PDF. Los administradores pueden configurar los detalles de la rifa y generar imágenes del estado de los boletos.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
